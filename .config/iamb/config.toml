@@ -1,0 +1,22 @@
+[profiles.user] 
+user_id = "@litlighilit:4d2.org"
+
+[settings]
+# Some will be displayed as `@_discord_xxx`
+username_display = "displayname"
+#username_display = "localpart"
+
+[settings.image_preview]
+protocol.type = "sixel"
+
+[settings.notifications]
+enabled = true
+
+[layout]
+style = "config"
+[[layout.tabs]]
+split = [
+    { window = "#nim-lang:matrix.org" },
+]
+
+

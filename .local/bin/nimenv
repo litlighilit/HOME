@@ -1,0 +1,88 @@
+#!/bin/bash
+set -eu
+exe="$1"
+shift
+rest="$@"
+: '
+  #--unshare-pid \
+  #--unshare-uts \
+  #--hostname sandbox \
+  --symlink usr/bin /bin \
+  --symlink usr/sbin /sbin \
+'
+#prefix=~/src/Nim/bin/
+#prefix=/usr/bin/
+prefix=""
+
+home_cache=~/.nimble
+ENV_NIMBLE=${NIMENV_HOME:-rootfs/$HOME}/.nimble
+nimble_bin=$home_cache/bin
+ro_binds=(
+	/bin
+	~/.gitconfig
+	~/.nimble/pkgs2/nim-*
+	#~/.nimble/bin  # see below
+	~/.nimble/nimbinaries
+	~/src/Nim ~/.choosenim)
+
+symlinks=(
+)
+
+if [ -v NIMENV_OVERLAY_BIN ]; then
+	overlayed=/tmp/nimenv/overlay
+	overlayed_work=/tmp/nimenv/work
+	mkdir -p $overlayed
+	mkdir -p $overlayed_work
+	if ! mount | grep -F "overlay on $overlayed type overlay" >/dev/null; then
+		sudo mount -t overlay overlay \
+		  -o lowerdir=$nimble_bin,upperdir=$ENV_NIMBLE/bin,workdir=$overlayed_work \
+		  $overlayed
+		umnt() { sudo umount $overlayed; }
+		trap umnt EXIT
+	fi
+	overlay_bind=" --bind $overlayed $nimble_bin "
+else
+	overlay_bind=" --ro-bind $nimble_bin $nimble_bin "
+fi
+
+join2_to_with() {
+	local -n _out=$1
+	local sep="$2"
+	shift 2
+	_out=""
+	for i in "$@"; do
+		_out="$_out $sep $i $i"
+	done
+}
+
+join2_to_with ro_bind_str --ro-bind ${ro_binds[@]}
+join2_to_with symlink_str --symlink ${symlinks[@]}
+
+
+bwrap \
+  --ro-bind /usr /usr \
+  --ro-bind /lib /lib \
+  --ro-bind /opt /opt \
+  --ro-bind /lib64 /lib64 \
+  --ro-bind /etc/resolv.conf /etc/resolv.conf \
+  --ro-bind /etc/ssl /etc/ssl \
+  --ro-bind /etc/ca-certificates /etc/ca-certificates \
+  --ro-bind /etc/hosts /etc/hosts \
+  --ro-bind /etc/localtime /etc/localtime \
+  --ro-bind /etc/passwd /etc/passwd \
+  --ro-bind /etc/group /etc/group \
+  --proc /proc \
+  --dev /dev \
+  --tmpfs /tmp \
+  --tmpfs /run \
+  --unsetenv NIMPYLIB_PKGS_BARE_PREFIX \
+  --bind $ENV_NIMBLE $home_cache \
+  $overlay_bind \
+  $symlink_str \
+  $ro_bind_str \
+  --bind "$PWD" "$PWD" \
+  --chdir "$PWD" \
+  --new-session \
+  --die-with-parent \
+  $prefix$exe \
+  $rest

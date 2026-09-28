@@ -1,0 +1,2 @@
+add-auto-load-safe-path /home/litlighilit/src/cpython/python-gdb.py
+add-auto-load-safe-path /mnt/File/program/utils/nimpylib/NPython/.gdbinit

@@ -1,0 +1,14 @@
+[AC][RunScript]
+ProfileLoadCommand=sudo systemctl start sshd
+ProfileUnloadCommand=sudo systemctl stop sshd
+
+[AC][SuspendAndShutdown]
+AutoSuspendIdleTimeoutSec=604800
+InhibitLidActionWhenExternalMonitorPresent=false
+LidAction=64
+
+[Battery][SuspendAndShutdown]
+AutoSuspendIdleTimeoutSec=300
+
+[LowBattery][SuspendAndShutdown]
+AutoSuspendIdleTimeoutSec=120
