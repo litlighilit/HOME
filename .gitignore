@@ -1,0 +1,13 @@
+/*
+
+!/.local/
+!/.config/
+
+!/.ssh/config
+!/.bash_aliases
+!/.bashrc
+
+!/.emacs
+
+!/.gitconfig
+!/.tmux.conf

@@ -1,0 +1,31 @@
+/*
+
+!/.gitignore
+!/baloofilerc
+!/powerdevilrc
+!/powermanagementprofilesrc
+
+# whole directory re-included
+!/systemd/
+
+# As `/*` is used, for dir/file reincluded, three patterns must be used
+!/gdb/
+/gdb/*
+!/gdb/gdbinit
+
+!/gtk-3.0/
+/gtk-3.0/*
+!/gtk-3.0/settings.ini
+
+!/iamb/
+/iamb/*
+!/iamb/config.toml
+
+!/pip/
+/pip/*
+!/pip/pip.conf
+
+!/uv/
+/uv/*
+!/uv/uv.toml
+
