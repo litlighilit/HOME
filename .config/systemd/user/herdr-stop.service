@@ -1,0 +1,12 @@
+[Unit]
+Description=Stop herdr server on shutdown/logout
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/bin/sh -c 'herdr server stop 2> /dev/null || true'
+TimeoutStopSec=5
+
+[Install]
+WantedBy=default.target
